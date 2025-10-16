@@ -76,6 +76,13 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* Brand (from Figma) */
+  --brand-navy: #073863; /* navbar, gradient end */
+  --brand-teal: #1E9086; /* gradient start */
+  --brand-blue: #1E73FF; /* primary button (Sign Up, CTA) */
+  --brand-navy-border: #0A3F66; /* subtle bottom border */
+  --brand-gradient: linear-gradient(180deg, #1E9086 0%, #073863 100%);
 }
 
 .dark {
