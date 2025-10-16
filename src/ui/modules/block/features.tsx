@@ -10,7 +10,7 @@ function SectionShell({ children, id }: { children: React.ReactNode; id: string 
         borderColor: "var(--brand-navy)",
       }}
     >
-      <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
+      <div className="mx-auto max-w-[1920px] px-4 sm:px-6 md:px-8 lg:px-20 lg:px-28 py-10 sm:py-14">
         {children}
       </div>
     </section>
@@ -48,8 +48,8 @@ export function PowerfulFeatures() {
   return (
     <SectionShell id="features">
       <div className="text-center mb-8 sm:mb-10">
-        <h2 className="text-[22px] sm:text-[24px] font-semibold text-white">Powerful Features</h2>
-        <p className="mt-1 text-[14px] text-white/80">
+        <h2 className="text-[14px] sm:text-[1rem] lg:text-[1.2rem] font-semibold text-white">Powerful Features</h2>
+        <p className="mt-1 text-[12px] sm:text-[1rem] lg:text-[1.2rem] text-white/80">
           Everything you need to accept payments globally and settle in your preferred currency.
         </p>
       </div>
@@ -99,8 +99,8 @@ export function WhoKleverPayIsFor() {
   return (
     <SectionShell id="audience">
       <div className="text-center mb-8 sm:mb-10">
-        <h2 className="text-[22px] sm:text-[24px] font-semibold text-white">Who KleverPay Is For</h2>
-        <p className="mt-1 text-[14px] text-white/80">
+        <h2 className="text-[1.2rem] sm:text-[1.5rem] lg:text-[2rem] font-semibold text-white">Who KleverPay Is For</h2>
+        <p className="mt-1 text-[12px] sm:text-[1rem] lg:text-[1.2rem] text-white/80">
           Designed for businesses and individuals who need flexible payment options across borders.
         </p>
       </div>
@@ -112,10 +112,10 @@ export function WhoKleverPayIsFor() {
             className="rounded-xl bg-white text-foreground shadow-sm border border-border p-4 sm:p-5"
           >
             <div className="mb-3 inline-flex items-center justify-center size-9 rounded-md bg-[rgba(7,56,99,0.06)]">
-              <span className="text-[color:var(--brand-navy)]">{i + 1}</span>
+              <span className="text-[color:var(--brand-navy)] text-[1.5rem]">{i + 1}</span>
             </div>
-            <div className="font-medium mb-1">{c.title}</div>
-            <p className="text-[13px] text-foreground/70">{c.desc}</p>
+            <div className="font-medium mb-1 text-[1.2rem]">{c.title}</div>
+            <p className="text-[0.8rem] text-foreground/70">{c.desc}</p>
           </div>
         ))}
       </div>

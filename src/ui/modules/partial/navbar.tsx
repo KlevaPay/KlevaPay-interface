@@ -11,7 +11,7 @@ export function Navbar() {
 
   return (
     <header className="w-full border-b" style={{ backgroundColor: "var(--brand-white)", borderColor: "var(--brand-navy-border)", color: "#fff" }}>
-      <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8 h-[77px] flex items-center justify-between">
+      <div className="mx-auto max-w-[1920px] px-4 sm:px-6 md:px-8 lg:px-20 lg:px-28 h-[77px] flex items-center justify-between">
         {/* Left: Brand */}
         <div className="flex items-center gap-3">
           <Image src="/logo.png" alt="KleverPay Logo" width={28} height={28} priority />

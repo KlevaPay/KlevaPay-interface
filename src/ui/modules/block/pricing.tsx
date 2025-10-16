@@ -91,7 +91,7 @@ export function Footer() {
       className="w-full border-t"
       style={{ background: "var(--brand-gradient)", borderColor: "var(--brand-navy)" }}
     >
-      <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8 py-10">
+      <div className="mx-auto max-w-[1920px] px-4 sm:px-6 md:px-8 lg:px-20 lg:px-28 lg:px-8 py-10">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-8 text-white/90 text-[14px]">
           <div className="md:col-span-2">
             <div className="text-white font-semibold mb-2">KleverPay</div>
