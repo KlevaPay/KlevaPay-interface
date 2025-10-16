@@ -1,6 +1,7 @@
 import { DashboardSidebar } from "@/ui/modules/block/dashboard/sidebar"
 import { DashboardTopbar } from "@/ui/modules/block/dashboard/topbar"
 import { PaymentsTable, type Payment } from "@/ui/modules/block/dashboard/payments-table"
+import { Suspense } from "react"
 
 const sample: Payment[] = [
   { id: "PAY-78651", customer: "Alex Johnson", amount: "$120.00 USD", method: "Card", status: "Completed", date: "2023-08-16 09:45" },
@@ -19,7 +20,9 @@ export default function PaymentsPage() {
         <DashboardTopbar />
         <main className="px-4 sm:px-6 lg:px-8 py-6">
           <section>
-            <PaymentsTable items={sample} />
+            <Suspense fallback={<div className="text-sm text-foreground/60">Loading payments...</div>}>
+              <PaymentsTable items={sample} />
+            </Suspense>
           </section>
         </main>
       </div>

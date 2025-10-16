@@ -64,7 +64,7 @@ export function Web3AuthProvider({ children }: { children: ReactNode }) {
         });
 
         console.log("Calling init()...");
-        await web3authInstance.init();
+        await web3authInstance.initModal();
 
         console.log("✓ init() completed successfully");
         console.log("Final status:", web3authInstance.status);

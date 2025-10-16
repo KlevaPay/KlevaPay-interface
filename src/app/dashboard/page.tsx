@@ -5,6 +5,7 @@ import { PieChart } from "@/ui/modules/block/dashboard/pie-chart"
 import { TransactionsTable } from "@/ui/modules/block/dashboard/transactions-table"
 import { QuickActions } from "@/ui/modules/block/dashboard/quick-actions"
 import { AlertsNotifications } from "@/ui/modules/block/dashboard/alerts"
+import { Suspense } from "react"
 
 export default function DashboardPage() {
   return (
@@ -63,15 +64,17 @@ export default function DashboardPage() {
 
           {/* Recent Transactions */}
           <section className="mt-6">
-            <TransactionsTable
-              items={[
-                { id: "TRX-12345", customer: "Alex Johnson", amount: "$1,250.00 USD", status: "Completed", date: "2023-08-15 14:30" },
-                { id: "TRX-12344", customer: "Sarah Williams", amount: "$750.50 USDT", status: "Completed", date: "2023-08-15 13:15" },
-                { id: "TRX-12343", customer: "Michael Brown", amount: "₦325,000.00 NGN", status: "Processing", date: "2023-08-15 12:45" },
-                { id: "TRX-12342", customer: "Emily Davis", amount: "$80.25 USD", status: "Failed", date: "2023-08-15 11:20" },
-                { id: "TRX-12341", customer: "Robert Wilson", amount: "$500.00 USDT", status: "Completed", date: "2023-08-15 10:05" },
-              ]}
-            />
+            <Suspense fallback={<div className="text-sm text-foreground/60">Loading transactions...</div>}>
+              <TransactionsTable
+                items={[
+                  { id: "TRX-12345", customer: "Alex Johnson", amount: "$1,250.00 USD", status: "Completed", date: "2023-08-15 14:30" },
+                  { id: "TRX-12344", customer: "Sarah Williams", amount: "$750.50 USDT", status: "Completed", date: "2023-08-15 13:15" },
+                  { id: "TRX-12343", customer: "Michael Brown", amount: "₦325,000.00 NGN", status: "Processing", date: "2023-08-15 12:45" },
+                  { id: "TRX-12342", customer: "Emily Davis", amount: "$80.25 USD", status: "Failed", date: "2023-08-15 11:20" },
+                  { id: "TRX-12341", customer: "Robert Wilson", amount: "$500.00 USDT", status: "Completed", date: "2023-08-15 10:05" },
+                ]}
+              />
+            </Suspense>
           </section>
 
           {/* Quick Actions */}
