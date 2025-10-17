@@ -1,0 +1,26 @@
+import Image from "next/image"
+import { Menu } from "lucide-react"
+
+export function DashboardTopbar() {
+  return (
+    <div className="h-[64px] w-full border-b bg-white/90 backdrop-blur flex items-center justify-between px-4 sm:px-6">
+      <div className="flex items-center gap-3">
+        <button className="md:hidden p-2 rounded hover:bg-black/5" aria-label="Open sidebar">
+          <Menu className="size-5" />
+        </button>
+        <div className="text-[15px] font-medium">Dashboard</div>
+      </div>
+
+      <div className="flex items-center gap-4">
+        <button className="relative p-2 rounded hover:bg-black/5" aria-label="Notifications">
+          <span className="absolute right-2 top-2 size-2 rounded-full bg-[color:var(--brand-blue)]"></span>
+          <span className="sr-only">Notifications</span>
+          <Image src="/notification.png" width={24} height={24} alt="Notification" />
+        </button>
+        <div className="size-8 rounded-full overflow-hidden border border-black/10">
+          <Image src="/user.png" width={32} height={32} alt="User" className="object-cover dark:invert" />
+        </div>
+      </div>
+    </div>
+  )
+}
