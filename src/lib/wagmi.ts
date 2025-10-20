@@ -3,7 +3,7 @@ import { http } from 'wagmi';
 import { mainnet, polygon, optimism, arbitrum, base, liskSepolia } from 'wagmi/chains';
 
 export const config = getDefaultConfig({
-  appName: 'KleverPay',
+  appName: 'KlevaPay',
   projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'YOUR_PROJECT_ID',
   chains: [mainnet, polygon, optimism, arbitrum, base, liskSepolia],
   transports: {

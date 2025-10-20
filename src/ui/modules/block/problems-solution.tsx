@@ -42,7 +42,7 @@ export function ProblemsSolution() {
               <h3 className="text-[18px] font-semibold">Our Solution</h3>
             </div>
             <p className="text-[14px] text-foreground/80 mb-4">
-              KleverPay integrates multiple payment systems for instant settlements.
+              KlevaPay integrates multiple payment systems for instant settlements.
             </p>
             <ul className="space-y-3 text-[14px] text-foreground/80">
               <li className="flex items-start gap-3"><CheckCircle2 className="mt-0.5 size-4 text-green-500"/>Flutterwave and OPay integration for seamless fiat transactions.</li>

@@ -94,7 +94,7 @@ export function Footer() {
       <div className="mx-auto max-w-[1920px] px-4 sm:px-6 md:px-8 lg:px-20 lg:px-28 lg:px-8 py-10">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-8 text-white/90 text-[14px]">
           <div className="md:col-span-2">
-            <div className="text-white font-semibold mb-2">KleverPay</div>
+            <div className="text-white font-semibold mb-2">KlevaPay</div>
             <p className="text-white/80 text-[13px] max-w-sm">
               Enabling fast and crypto payments for African merchants and global customers.
             </p>
@@ -136,7 +136,7 @@ export function Footer() {
         </div>
 
         <div className="mt-8 border-t border-white/15 pt-4 text-center text-white/70 text-[12px]">
-          © 2025 KleverPay by Team A. All rights reserved.
+          © 2025 KlevaPay by Team A. All rights reserved.
         </div>
       </div>
     </footer>

@@ -45,7 +45,7 @@ export function Hero() {
           <div className="relative w-[320px] h-[320px] sm:w-[380px] sm:h-[380px] rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)] bg-white/70 backdrop-blur">
             <Image
               src="/logo.png"
-              alt="KleverPay Graphic Placeholder"
+              alt="KlevaPay Graphic Placeholder"
               fill
               className="object-contain p-8"
               priority

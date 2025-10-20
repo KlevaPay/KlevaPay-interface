@@ -11,12 +11,13 @@ if (!clientId) {
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
-  chainId: "0x144", 
+  chainId: "0x106a",
   rpcTarget: "https://rpc.sepolia-api.lisk.com",
-  displayName: "Lisk Sepolia",
+  displayName: "Lisk Sepolia Testnet",
   blockExplorerUrl: "https://sepolia-blockscout.lisk.com",
   ticker: "ETH",
   tickerName: "Ethereum",
+  logo: "https://cryptologos.cc/logos/ethereum-eth-logo.png",
 };
 
 export const createWeb3Auth = () => {
@@ -29,7 +30,7 @@ export const createWeb3Auth = () => {
     privateKeyProvider,
     web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_DEVNET,
     uiConfig: {
-      appName: "KleverPay",
+      appName: "KlevaPay",
       mode: "light",
       loginMethodsOrder: ["google", "apple", "twitter", "github", "discord"],
       defaultLanguage: "en",

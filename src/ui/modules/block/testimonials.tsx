@@ -33,7 +33,7 @@ export function TestimonialsPartners() {
       <div className="text-center mb-8 sm:mb-10">
         <h2 className="text-[1.2rem] sm:text-[1.5rem] lg:text-[2rem] font-semibold text-white">What Our Customers Say</h2>
         <p className="mt-1 text-[12px] sm:text-[1rem] lg:text-[1.2rem] text-white/80">
-          Join hundreds of businesses already using KleverPay to process payments.
+          Join hundreds of businesses already using KlevaPay to process payments.
         </p>
       </div>
 
@@ -52,7 +52,7 @@ export function TestimonialsPartners() {
                 ))}
               </div>
               <p className="text-[14px] text-foreground/90 mb-5">
-                “KleverPay has revolutionized how we accept payments. Our international customers can now pay in crypto while we receive USD. The rates are transparent and the settlements are fast.”
+                “KlevaPay has revolutionized how we accept payments. Our international customers can now pay in crypto while we receive USD. The rates are transparent and the settlements are fast.”
               </p>
               <div className="flex items-center gap-3">
                 <div className="size-8 rounded-full bg-[rgba(7,56,99,0.12)] flex items-center justify-center text-[color:var(--brand-navy)] font-semibold">

@@ -150,7 +150,7 @@ export function WalletConnectModal({ isOpen, onClose }: WalletConnectModalProps)
         </div>
 
         <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
-          Choose how you want to connect to KleverPay
+          Choose how you want to connect to KlevaPay
         </p>
 
         {(error || initError) && (

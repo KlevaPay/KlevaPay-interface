@@ -14,8 +14,8 @@ export function Navbar() {
       <div className="mx-auto max-w-[1920px] px-4 sm:px-6 md:px-8 lg:px-20 lg:px-28 h-[77px] flex items-center justify-between">
         {/* Left: Brand */}
         <div className="flex items-center gap-3">
-          <Image src="/logo.png" alt="KleverPay Logo" width={28} height={28} priority />
-          <span className="text-[22px] font-semibold tracking-tight" style={{ color: "#0A486C" }}>KleverPay</span>
+          <Image src="/logo.png" alt="KlevaPay Logo" width={28} height={28} priority />
+          <span className="text-[22px] font-semibold tracking-tight" style={{ color: "#0A486C" }}>KlevaPay</span>
         </div>
         <nav aria-label="Primary" className="hidden md:flex items-center gap-6 text-[14px]">
           <div className="relative flex items-center gap-6">
@@ -45,7 +45,7 @@ export function Navbar() {
             style={{ backgroundColor: w3aConnected ? "var(--brand-navy)" : "var(--brand-blue)" }}
             onClick={() => (w3aConnected ? disconnectWeb3Auth() : connectWeb3Auth())}
           >
-            {w3aConnected ? "Web3Auth: Connected" : "Wallet"}
+            {w3aConnected ? "Web3Auth: Connected" : "Sign In"}
           </Button>
         </div>
       </div>

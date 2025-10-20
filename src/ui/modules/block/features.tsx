@@ -72,7 +72,7 @@ export function PowerfulFeatures() {
   )
 }
 
-export function WhoKleverPayIsFor() {
+export function WhoKlevaPayIsFor() {
   const items = [
     {
       title: "African E‑commerce Merchants",
@@ -99,7 +99,7 @@ export function WhoKleverPayIsFor() {
   return (
     <SectionShell id="audience">
       <div className="text-center mb-8 sm:mb-10">
-        <h2 className="text-[1.2rem] sm:text-[1.5rem] lg:text-[2rem] font-semibold text-white">Who KleverPay Is For</h2>
+        <h2 className="text-[1.2rem] sm:text-[1.5rem] lg:text-[2rem] font-semibold text-white">Who KlevaPay Is For</h2>
         <p className="mt-1 text-[12px] sm:text-[1rem] lg:text-[1.2rem] text-white/80">
           Designed for businesses and individuals who need flexible payment options across borders.
         </p>

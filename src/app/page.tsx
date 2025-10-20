@@ -1,4 +1,4 @@
-import { Hero, ProblemsSolution, PowerfulFeatures, WhoKleverPayIsFor, TestimonialsPartners, Pricing, Footer } from "@/ui/modules/block";
+import { Hero, ProblemsSolution, PowerfulFeatures, WhoKlevaPayIsFor, TestimonialsPartners, Pricing, Footer } from "@/ui/modules/block";
 import { Navbar } from "@/ui/modules/partial/navbar";
 
 export default function Home() {
@@ -8,7 +8,7 @@ export default function Home() {
       <Hero />
       <ProblemsSolution />
       <PowerfulFeatures />
-      <WhoKleverPayIsFor />
+      <WhoKlevaPayIsFor />
       <TestimonialsPartners />
       <Pricing />
       <Footer />
