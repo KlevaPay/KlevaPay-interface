@@ -74,16 +74,27 @@ export enum SettlementCurrency {
 
 export interface Merchant {
   id: string
-  email: string
+  email?: string
+  walletAddress?: string
   businessName: string
   businessType?: string
   country: string
-  status: MerchantStatus
-  kycStatus: KYCStatus
+  status?: MerchantStatus
+  kycStatus?: KYCStatus
   apiKey?: string
   secretKey?: string
-  settlementCurrency: SettlementCurrency
+  settlementCurrency?: SettlementCurrency
   webhookUrl?: string
+  payoutPreferences?: {
+    currency?: string
+    method?: "bank_transfer" | "crypto"
+    accountDetails?: {
+      bankName?: string
+      accountNumber?: string
+      accountName?: string
+      routingNumber?: string
+    }
+  }
   createdAt: string
   updatedAt: string
 }

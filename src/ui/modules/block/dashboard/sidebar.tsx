@@ -1,11 +1,15 @@
 import Link from "next/link"
-import { BarChart3, CreditCard, DollarSign, Home, Settings, HelpCircle, Users, BookOpen } from "lucide-react"
+import { BarChart3, CreditCard, DollarSign, Home, Settings, HelpCircle, Users, BookOpen, Store, Receipt, Coins, Wallet } from "lucide-react"
 
 export function DashboardSidebar() {
   const nav = [
     { label: "Overview", icon: Home, href: "/dashboard" },
+    { label: "Merchant", icon: Store, href: "/dashboard/merchant" },
     { label: "Transactions", icon: CreditCard, href: "/dashboard/transactions" },
     { label: "Payments", icon: DollarSign, href: "/dashboard/payments" },
+    { label: "Payment Intents", icon: Receipt, href: "/dashboard/payment-intents" },
+    { label: "Crypto", icon: Coins, href: "/dashboard/crypto" },
+    { label: "Quick Pay", icon: Wallet, href: "/dashboard/pay" },
     { label: "Analytics", icon: BarChart3, href: "/dashboard/analytics" },
     { label: "Customers", icon: Users, href: "/dashboard/customers" },
     { label: "Settings", icon: Settings, href: "/dashboard/settings" },
