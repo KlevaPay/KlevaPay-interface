@@ -35,10 +35,49 @@ export const transactionsApi = {
   },
 
   /**
-   * Get transaction by ID
+   * Get transactions by wallet address with pagination and filters
+   * Matches response: { success, message, data: { merchant, transactions, pagination, summary, filters } }
    */
-  getTransaction: async (id: string, token: string): Promise<ApiResponse<Transaction>> => {
-    return apiClient.get<Transaction>(`/api/transactions/${id}`, token)
+  getTransactionsByWallet: async (
+    walletAddress: string,
+    token: string,
+    page = 1,
+    limit = 20,
+    filters?: TransactionFilters
+  ): Promise<
+    ApiResponse<
+      {
+        merchant: any
+        transactions: Transaction[]
+        pagination: { currentPage: number; totalPages: number; totalCount: number; limit: number; hasNextPage: boolean; hasPrevPage: boolean }
+        summary: { totalAmount: number; totalTransactions: number; successfulTransactions: number; pendingTransactions: number; failedTransactions: number; totalSuccessfulAmount: number }
+        filters?: any
+      }
+    >
+  > => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+      ...(filters as any),
+    })
+
+    return apiClient.get(
+      `/api/transactions/wallet/${walletAddress}?${params.toString()}`,
+      token
+    )
+  },
+
+  /**
+   * Get transactions by wallet address
+   */
+  getTransaction: async (
+    walletAddress: string,
+    token: string
+  ): Promise<ApiResponse<Transaction>> => {
+    return apiClient.get<Transaction>(
+      `/api/transactions/wallet/${walletAddress}`,
+      token
+    )
   },
 
   /**

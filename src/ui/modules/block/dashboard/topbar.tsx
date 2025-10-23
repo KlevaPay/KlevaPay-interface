@@ -1,7 +1,13 @@
 import Image from "next/image"
 import { Menu } from "lucide-react"
+import { Button } from "../../components"
+import { useWeb3Auth } from "@/providers/web3auth-provider"
+import { redirect } from "next/navigation"
 
 export function DashboardTopbar() {
+  const { isConnected: w3aConnected, disconnect: disconnectWeb3Auth } = useWeb3Auth()
+  if(!w3aConnected) redirect('/')
+
   return (
     <div className="h-[64px] w-full border-b bg-white/90 backdrop-blur flex items-center justify-between px-4 sm:px-6">
       <div className="flex items-center gap-3">
@@ -20,6 +26,7 @@ export function DashboardTopbar() {
         <div className="size-8 rounded-full overflow-hidden border border-black/10">
           <Image src="/user.png" width={32} height={32} alt="User" className="object-cover dark:invert" />
         </div>
+        <Button onClick={() => disconnectWeb3Auth()}>Disconnect</Button>
       </div>
     </div>
   )

@@ -91,7 +91,7 @@ export default function MerchantPage() {
                 </div>
 
                 <div className="rounded-xl bg-white shadow-sm border border-border p-6">
-                  <h3 className="text-sm font-medium text-foreground/70 mb-2">Active Customers</h3>
+                  <h3 className="text-sm font-medium text-foreground/70 mb-2">Pending Transactions</h3>
                   <p className="text-2xl font-bold text-foreground">
                     {stats?.activeCustomers?.toLocaleString() || "0"}
                   </p>

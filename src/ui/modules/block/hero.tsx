@@ -1,5 +1,6 @@
 "use client"
 import Image from "next/image"
+import Link from "next/link"
 import { Button } from "@/ui/modules/components"
 import { motion } from "framer-motion"
 
@@ -31,14 +32,15 @@ export function Hero() {
             Low fees, fast conversions, secure integrations.
           </p>
 
+          <Link href="/onboarding/create-profile">
             <Button
               size="lg"
               className="text-white"
               style={{ backgroundColor: "var(--brand-blue)" }}
             >
-              Get Started for Free
-              <span className="ml-2 inline-block">→</span>
+              Get Started for Free <span className="ml-2 inline-block">→</span>
             </Button>
+          </Link>
         </motion.div>
 
         <div className="flex justify-center md:justify-end">
@@ -56,3 +58,4 @@ export function Hero() {
     </section>
   )
 }
+

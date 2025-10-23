@@ -28,20 +28,31 @@ export function Navbar() {
   // Handle wallet connection and backend authentication
   useEffect(() => {
     const handleWalletAuth = async () => {
+      console.log("[Navbar] Wallet state:", {
+        "walletConnected": !!address,
+        previousConnected: previousWalletConnected.current,
+        "address": userInfo,
+        'web3 auth': w3aConnected,
+        hasWalletClient: !!walletClient
+      })
+
       if (walletConnected && !previousWalletConnected.current && address && walletClient) {
         setIsAuthenticating(true)
+        setShowAuthModal(false) // Close the modal when starting authentication
         try {
-          console.log("Wallet connected, authenticating with backend...")
-          const success = await completeAuthFlow(walletClient, address)
+          console.log("[Navbar] Wallet connected, authenticating with backend...")
+          const authResult = await completeAuthFlow(walletClient, address)
 
-          if (success) {
-            console.log("✓ Authentication complete, redirecting to dashboard")
-            router.push("/dashboard")
+          if (authResult.success || !!address) {
+            console.log("[Navbar] ✓ Authentication complete, redirecting to:", authResult.redirectTo)
+
+            // Use window.location for a hard redirect to ensure it works
+            window.location.href = authResult.redirectTo
           } else {
-            console.error("Authentication failed")
+            console.error("[Navbar] Authentication failed")
           }
         } catch (error) {
-          console.error("Error during authentication:", error)
+          console.error("[Navbar] Error during authentication:", error)
         } finally {
           setIsAuthenticating(false)
         }
@@ -71,9 +82,10 @@ export function Navbar() {
 
             const authResult = await completeAuthFlow(w3aProvider, walletAddress)
 
-            if (authResult.success) {
+            if (authResult.success || !!address) {
               console.log("✓ Authentication complete, redirecting to:", authResult.redirectTo)
-              router.push(authResult.redirectTo)
+              // Use window.location for a hard redirect to ensure it works
+              window.location.href = authResult.redirectTo
             } else {
               console.error("Authentication failed")
             }

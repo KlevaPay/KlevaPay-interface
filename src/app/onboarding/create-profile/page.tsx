@@ -8,7 +8,7 @@ import toast, { Toaster } from "react-hot-toast"
 
 export default function CreateProfilePage() {
   const router = useRouter()
-  const { merchant, token } = useAuth()
+  const { token } = useAuth()
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState<CreateMerchantData>({
     businessName: "",

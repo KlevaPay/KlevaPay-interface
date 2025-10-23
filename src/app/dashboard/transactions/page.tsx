@@ -13,7 +13,7 @@ import { PaymentStatus } from "@/types"
 import { Search, Filter, Download, ChevronLeft, ChevronRight } from "lucide-react"
 
 export default function TransactionsPage() {
-  const { token, isAuthenticated } = useAuth()
+  const { token, isAuthenticated, merchant } = useAuth()
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -35,10 +35,24 @@ export default function TransactionsPage() {
       return
     }
 
+    const walletAddress = merchant?.walletAddress
+    if (!walletAddress) {
+      console.warn("No wallet address on merchant profile")
+      setError("Missing wallet address. Please complete your merchant profile.")
+      setIsLoading(false)
+      return
+    }
+
     setIsLoading(true)
     setError(null)
 
-    const response = await transactionsApi.getTransactions(token, page, limit, filters)
+    const response = await transactionsApi.getTransactionsByWallet(
+      walletAddress,
+      token,
+      page,
+      limit,
+      filters
+    )
 
     console.log("Transactions API Response:", response)
     console.log("Response data structure:", {
@@ -49,14 +63,14 @@ export default function TransactionsPage() {
     })
 
     if (response.success && response.data) {
-      // Handle different response structures
-      const items = response.data.items || (response.data as any).data || (response.data as any).transactions || []
-      const total = response.data.total || (response.data as any).count || items.length
+      const { transactions, pagination } = response.data as any
+      const items = Array.isArray(transactions) ? transactions : []
+      const totalPagesFromApi = pagination?.totalPages || 1
 
-      console.log("Extracted data:", { items, total })
+      console.log("Extracted data:", { itemsCount: items.length, pagination })
 
-      setTransactions(Array.isArray(items) ? items : [])
-      setTotalPages(Math.ceil(total / limit))
+      setTransactions(items)
+      setTotalPages(totalPagesFromApi)
     } else {
       console.error("Failed to load transactions:", response.error)
       setError(response.error?.message || "Failed to load transactions")
@@ -67,7 +81,7 @@ export default function TransactionsPage() {
 
   useEffect(() => {
     fetchTransactions()
-  }, [token, page, filters])
+  }, [token, merchant?.walletAddress, page, filters])
 
   // Handle filter change
   const handleFilterChange = (filterType: keyof TransactionFilters, value: any) => {
