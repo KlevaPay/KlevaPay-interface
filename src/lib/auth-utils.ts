@@ -4,9 +4,7 @@
  * Handles wallet signing and backend authentication
  */
 
-import { authApi } from "./api"
 import { useAuthStore } from "@/hooks/useAuth"
-import type { IProvider } from "@web3auth/base"
 
 /**
  * Sign a message with wallet or Web3Auth provider
@@ -94,8 +92,36 @@ export async function authenticateWithBackend(
 
     // Store auth regardless of merchant profile (so user can create profile)
     console.log("[Backend Auth] Storing auth in state...")
+    console.log("[Backend Auth] Setting token:", token.slice(0, 10) + "...")
+    console.log("[Backend Auth] Setting merchant:", merchant ? "Found" : "null")
     useAuthStore.getState().setAuth(token, merchant || null)
-    console.log("[Backend Auth] ✓ Web3 authentication successful")
+
+    // Wait a moment for zustand persist middleware to write to localStorage
+    await new Promise(resolve => setTimeout(resolve, 100))
+
+    // Verify auth was stored
+    const storedAuth = useAuthStore.getState()
+    console.log("[Backend Auth] ✓ Web3 authentication successful and persisted:", {
+      token: storedAuth.token ? `${storedAuth.token.slice(0, 10)}...` : null,
+      isAuthenticated: storedAuth.isAuthenticated,
+      hasMerchant: !!storedAuth.merchant
+    })
+
+    // Double-check localStorage to ensure persistence
+    try {
+      const localStorageData = localStorage.getItem("klevapay-auth")
+      if (localStorageData) {
+        const parsed = JSON.parse(localStorageData)
+        console.log("[Backend Auth] Verified in localStorage:", {
+          hasToken: !!parsed.state?.token,
+          hasIsAuthenticated: !!parsed.state?.isAuthenticated
+        })
+      } else {
+        console.warn("[Backend Auth] ⚠ No data found in localStorage!")
+      }
+    } catch (e) {
+      console.error("[Backend Auth] Error checking localStorage:", e)
+    }
 
     return { success: true, hasMerchantProfile, merchant }
   } catch (error) {

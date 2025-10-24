@@ -8,8 +8,8 @@ import type { ApiResponse, Merchant } from "@/types"
 export interface MerchantStats {
   totalRevenue: number
   totalTransactions: number
+  pendingTransactions: number
   successRate: number
-  activeCustomers: number
 }
 
 export interface MerchantSettings {
@@ -49,11 +49,16 @@ export const merchantApi = {
    */
   checkMerchantExists: async (walletAddress: string): Promise<ApiResponse<{ exists: boolean; merchant?: Merchant }>> => {
     try {
+      console.log("[MerchantAPI] Checking if merchant exists for wallet:", walletAddress)
+
       // Try to get merchant by wallet address
       const response = await apiClient.get<{ success: boolean; data: Merchant }>(`/api/merchant/wallet/${walletAddress}`)
 
+      console.log("[MerchantAPI] Merchant check response:", response)
+
       if (response.success && response.data) {
         const merchantData = (response.data as any).data || response.data
+        console.log("[MerchantAPI] ✓ Merchant exists:", merchantData)
         return {
           success: true,
           data: {
@@ -64,12 +69,14 @@ export const merchantApi = {
       }
 
       // If we get an error (404), merchant doesn't exist
+      console.log("[MerchantAPI] ⚠ Merchant does not exist (no data in response)")
       return {
         success: true,
         data: { exists: false },
       }
     } catch (error) {
-      // Error likely means merchant doesn't exist
+      // Error likely means merchant doesn't exist (404) or API is down
+      console.log("[MerchantAPI] ⚠ Error checking merchant (likely doesn't exist):", error)
       return {
         success: true,
         data: { exists: false },
@@ -115,8 +122,8 @@ export const merchantApi = {
   /**
    * Get merchant statistics
    */
-  getStats: async (token: string): Promise<ApiResponse<MerchantStats>> => {
-    return apiClient.get<MerchantStats>("/api/merchant/stats", token)
+  getStats: async (walletAddress: string): Promise<ApiResponse<MerchantStats>> => {
+    return apiClient.get<MerchantStats>(`/api/transactions/wallet/${walletAddress}/stats`, walletAddress)
   },
 
   /**

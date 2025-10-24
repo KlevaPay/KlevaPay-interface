@@ -1,24 +1,83 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/hooks/useAuth"
+import { useAccount } from "wagmi"
+import { useWeb3Auth } from "@/providers/web3auth-provider"
 import { merchantApi, type CreateMerchantData } from "@/lib/api"
 import toast, { Toaster } from "react-hot-toast"
 
 export default function CreateProfilePage() {
   const router = useRouter()
-  const { token } = useAuth()
+  const { token, isAuthenticated, merchant } = useAuth()
+  const { isConnected: walletConnected, address: wagmiAddress } = useAccount()
+  const { isConnected: w3aConnected, provider: w3aProvider } = useWeb3Auth()
   const [loading, setLoading] = useState(false)
+  const [walletAddress, setWalletAddress] = useState<string>("")
+
+  const isConnected = walletConnected || w3aConnected
+
+  // Get wallet address from wagmi or web3auth
+  useEffect(() => {
+    const getWalletAddress = async () => {
+      if (wagmiAddress) {
+        setWalletAddress(wagmiAddress)
+      } else if (w3aConnected && w3aProvider) {
+        try {
+          const accounts = await w3aProvider.request({
+            method: "eth_accounts",
+          }) as string[]
+          if (accounts && accounts.length > 0) {
+            setWalletAddress(accounts[0])
+          }
+        } catch (error) {
+          console.error("Error getting wallet address:", error)
+        }
+      } else if (token) {
+        // Fallback to token which is the wallet address
+        setWalletAddress(token)
+      }
+    }
+
+    getWalletAddress()
+  }, [wagmiAddress, w3aConnected, w3aProvider, token])
+
+  // Redirect if wallet is not connected
+  useEffect(() => {
+    if (!isConnected && !isAuthenticated) {
+      console.log("[CreateProfile] No wallet connected, redirecting to home...")
+      router.push("/")
+    }
+  }, [isConnected, isAuthenticated, router])
+
+  // Redirect to dashboard if merchant already exists
+  useEffect(() => {
+    if (merchant) {
+      console.log("[CreateProfile] Merchant already exists, redirecting to dashboard...")
+      router.push("/dashboard/merchant")
+    }
+  }, [merchant, router])
+
   const [formData, setFormData] = useState<CreateMerchantData>({
     businessName: "",
     country: "",
-    walletAddress: token || "",
+    walletAddress: "",
     payoutPreferences: {
       currency: "USD",
       method: "crypto",
     },
   })
+
+  // Update wallet address in form when it's available
+  useEffect(() => {
+    if (walletAddress && !formData.walletAddress) {
+      setFormData(prev => ({
+        ...prev,
+        walletAddress: walletAddress
+      }))
+    }
+  }, [walletAddress, formData.walletAddress])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -78,20 +137,69 @@ export default function CreateProfilePage() {
 
         // Redirect to dashboard after a short delay
         setTimeout(() => {
-          router.push("/dashboard")
+          router.push("/dashboard/merchant")
         }, 1500)
       } else {
-        toast.error(`Failed to create profile: ${response.error?.message}`)
+        // Handle different error responses
+        const errorCode = response.error?.code || ""
+        const errorMessage = response.error?.message || "Failed to create profile"
+
+        console.log("[CreateProfile] Error:", { code: errorCode, message: errorMessage })
+
+        // Provide user-friendly error messages based on status code or message
+        if (errorCode === "HTTP_409" || errorCode.includes("409") || errorMessage.includes("already linked") || errorMessage.includes("already exists")) {
+          toast.error("This wallet address is already linked to a business. Redirecting to your dashboard...")
+          // Redirect to dashboard after showing error
+          setTimeout(() => {
+            router.push("/dashboard/merchant")
+          }, 2000)
+        } else if (errorCode === "HTTP_400" || errorMessage.includes("Wallet address is required")) {
+          toast.error("Wallet address is missing. Please reconnect your wallet and try again.")
+        } else if (errorMessage.includes("required") || errorMessage.includes("validation")) {
+          toast.error("Please fill in all required fields.")
+        } else if (errorCode === "HTTP_500" || errorCode.includes("500")) {
+          toast.error("Server error. Please try again later.")
+        } else {
+          // Show the actual error message from the server
+          toast.error(errorMessage || "Failed to create business profile. Please try again.")
+        }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating merchant profile:", error)
-      toast.error("An error occurred while creating your profile")
+
+      // Parse error message from caught error
+      const errorMessage = error?.message || error?.toString() || "An unexpected error occurred"
+
+      if (errorMessage.includes("409") || errorMessage.includes("Conflict") || errorMessage.includes("already")) {
+        toast.error("This wallet address is already linked to a business. Redirecting to your dashboard...")
+        setTimeout(() => {
+          router.push("/dashboard/merchant")
+        }, 2000)
+      } else if (errorMessage.includes("400") || errorMessage.includes("validation")) {
+        toast.error("Please check your input and try again.")
+      } else if (errorMessage.includes("500")) {
+        toast.error("Server error. Please try again later.")
+      } else {
+        toast.error("An error occurred while creating your profile. Please try again.")
+      }
     } finally {
       setLoading(false)
     }
   }
 
   const showBankFields = formData.payoutPreferences.method === "bank_transfer"
+
+  // Show loading state while checking connection
+  if (!isConnected && !isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Checking wallet connection...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">

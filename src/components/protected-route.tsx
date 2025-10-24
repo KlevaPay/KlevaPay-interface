@@ -20,7 +20,7 @@ interface ProtectedRouteProps {
 export function ProtectedRoute({ children, requireAuth = true }: ProtectedRouteProps) {
   const router = useRouter()
   const { token, isAuthenticated } = useAuth()
-  const { address: wagmiAddress, isConnected: isWagmiConnected } = useAccount()
+  const { isConnected: isWagmiConnected } = useAccount()
   const { isConnected: isWeb3AuthConnected, isLoading: isWeb3AuthLoading } = useWeb3Auth()
 
   useEffect(() => {
@@ -34,23 +34,29 @@ export function ProtectedRoute({ children, requireAuth = true }: ProtectedRouteP
       return
     }
 
-    // Check if user has any wallet connection
+    // Check if user has any wallet connection or auth token
     const hasWalletConnection = isWagmiConnected || isWeb3AuthConnected
     const hasAuthToken = !!token && isAuthenticated
 
-    // If no wallet is connected and no auth token, redirect to home
-    if (!hasWalletConnection && !hasAuthToken) {
-      console.log("[ProtectedRoute] No wallet connected, redirecting to home...")
-      router.push("/")
+    console.log("[ProtectedRoute] Checking access:", {
+      hasWalletConnection,
+      hasAuthToken,
+      token: token ? `${token.slice(0, 10)}...` : null,
+      isAuthenticated,
+      isWagmiConnected,
+      isWeb3AuthConnected
+    })
+
+    // If user has either wallet connection OR auth token, allow access
+    // This handles the case where auth is persisted but wallet hasn't reconnected yet
+    if (hasWalletConnection || hasAuthToken) {
+      console.log("[ProtectedRoute] ✓ Access granted")
       return
     }
 
-    // If wallet is connected but no auth token, user needs to complete auth flow
-    // This is allowed for onboarding pages where they can create profile
-    if (hasWalletConnection && !hasAuthToken) {
-      console.log("[ProtectedRoute] Wallet connected but no auth token")
-      // Allow access - user might be in the process of creating profile
-    }
+    // If no wallet is connected AND no auth token, redirect to home
+    console.log("[ProtectedRoute] ✗ No authentication found, redirecting to home...")
+    router.push("/")
   }, [
     requireAuth,
     token,

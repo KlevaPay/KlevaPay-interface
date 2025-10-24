@@ -64,7 +64,13 @@ export const useAuthStore = create<AuthState>()(
       },
 
       updateMerchant: (merchant) => {
-        set({ merchant })
+        // Only update merchant, preserve token and isAuthenticated
+        const currentState = get()
+        set({
+          merchant,
+          token: currentState.token,
+          isAuthenticated: currentState.isAuthenticated
+        })
       },
     }),
     {
@@ -76,6 +82,7 @@ export const useAuthStore = create<AuthState>()(
 // Custom hook for easier usage
 export const useAuth = () => {
   const store = useAuthStore()
+
   return {
     ...store,
     isLoading: false, // Add loading state if needed

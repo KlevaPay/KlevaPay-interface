@@ -10,7 +10,7 @@ import { useAccount, useWalletClient } from "wagmi"
 import { AuthMethodModal } from "@/ui/modules/components/auth-method-modal"
 import Image from "next/image"
 import { completeAuthFlow } from "@/lib/auth-utils"
-import { useAuth } from "@/hooks/useAuth"
+import { useAuth, useAuthStore } from "@/hooks/useAuth"
 
 export function Navbar() {
   const router = useRouter()
@@ -28,26 +28,41 @@ export function Navbar() {
   // Handle wallet connection and backend authentication
   useEffect(() => {
     const handleWalletAuth = async () => {
+      const { token, isAuthenticated } = useAuthStore.getState()
+
       console.log("[Navbar] Wallet state:", {
-        "walletConnected": !!address,
+        walletConnected: walletConnected,
         previousConnected: previousWalletConnected.current,
-        "address": userInfo,
-        'web3 auth': w3aConnected,
-        hasWalletClient: !!walletClient
+        address: address ? `${address.slice(0, 10)}...` : null,
+        web3Auth: w3aConnected,
+        hasWalletClient: !!walletClient,
+        hasToken: !!token,
+        isAuthenticated
       })
 
-      if (walletConnected && !previousWalletConnected.current && address && walletClient) {
+      // Check if we need to authenticate:
+      // 1. Wallet is connected with address and walletClient
+      // 2. Either it's a new connection OR token is missing (reconnected wallet without auth)
+      const needsAuth = walletConnected && address && walletClient && (
+        !previousWalletConnected.current || !token || !isAuthenticated
+      )
+
+      if (needsAuth) {
         setIsAuthenticating(true)
         setShowAuthModal(false) // Close the modal when starting authentication
         try {
           console.log("[Navbar] Wallet connected, authenticating with backend...")
+          console.log("[Navbar] Reason:", {
+            newConnection: !previousWalletConnected.current,
+            missingToken: !token,
+            notAuthenticated: !isAuthenticated
+          })
+
           const authResult = await completeAuthFlow(walletClient, address)
 
-          if (authResult.success || !!address) {
+          if (authResult.success) {
             console.log("[Navbar] ✓ Authentication complete, redirecting to:", authResult.redirectTo)
-
-            // Use window.location for a hard redirect to ensure it works
-            window.location.href = authResult.redirectTo
+            router.push(authResult.redirectTo)
           } else {
             console.error("[Navbar] Authentication failed")
           }
@@ -55,13 +70,19 @@ export function Navbar() {
           console.error("[Navbar] Error during authentication:", error)
         } finally {
           setIsAuthenticating(false)
+          previousWalletConnected.current = walletConnected
         }
+      } else if (walletConnected && address) {
+        // Update previousConnected if wallet is still connected
+        previousWalletConnected.current = walletConnected
+      } else if (!walletConnected) {
+        // Reset previousConnected when wallet is disconnected
+        previousWalletConnected.current = false
       }
-      previousWalletConnected.current = walletConnected
     }
 
     handleWalletAuth()
-  }, [walletConnected, address, walletClient, router])
+  }, [walletConnected, address, walletClient, router, w3aConnected])
 
   // Handle Web3Auth connection and backend authentication
   useEffect(() => {
@@ -84,8 +105,7 @@ export function Navbar() {
 
             if (authResult.success || !!address) {
               console.log("✓ Authentication complete, redirecting to:", authResult.redirectTo)
-              // Use window.location for a hard redirect to ensure it works
-              window.location.href = authResult.redirectTo
+              router.push(authResult.redirectTo)
             } else {
               console.error("Authentication failed")
             }
