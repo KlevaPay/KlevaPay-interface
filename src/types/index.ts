@@ -1,3 +1,4 @@
+
 // ============================================================================
 // KLEVAPAY TYPES
 // ============================================================================
@@ -74,16 +75,27 @@ export enum SettlementCurrency {
 
 export interface Merchant {
   id: string
-  email: string
+  email?: string
+  walletAddress?: string
   businessName: string
   businessType?: string
   country: string
-  status: MerchantStatus
-  kycStatus: KYCStatus
+  status?: MerchantStatus
+  kycStatus?: KYCStatus
   apiKey?: string
   secretKey?: string
-  settlementCurrency: SettlementCurrency
+  settlementCurrency?: SettlementCurrency
   webhookUrl?: string
+  payoutPreferences?: {
+    currency?: string
+    method?: "bank_transfer" | "crypto"
+    accountDetails?: {
+      bankName?: string
+      accountNumber?: string
+      accountName?: string
+      routingNumber?: string
+    }
+  }
   createdAt: string
   updatedAt: string
 }
@@ -108,25 +120,21 @@ export interface PaymentIntent {
 }
 
 export interface Transaction {
-  id: string
+  _id: string
+  id?: string
   merchantId: string
-  paymentIntentId?: string
-  type: TransactionType
+  reference: string
   amount: number
-  currency: Currency
-  status: PaymentStatus
-  paymentMethod?: PaymentMethod
+  currency: string
+  method: string
+  status: string
+  providerResponse?: {
+    gateway?: string
+    id?: number
+  }
+  metadata?: Record<string, any>
   customerName?: string
   customerEmail?: string
-  transactionHash?: string
-  providerReference?: string
-  fee?: number
-  netAmount?: number
-  convertedAmount?: number
-  convertedCurrency?: Currency
-  conversionRate?: number
-  description?: string
-  metadata?: Record<string, any>
   createdAt: string
   updatedAt: string
 }

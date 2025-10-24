@@ -6,28 +6,126 @@ import Link from "next/link"
 import { Button } from "@/ui/modules/components"
 import { ConnectButton } from "@rainbow-me/rainbowkit"
 import { useWeb3Auth } from "@/providers/web3auth-provider"
-import { useAccount } from "wagmi"
+import { useAccount, useWalletClient } from "wagmi"
 import { AuthMethodModal } from "@/ui/modules/components/auth-method-modal"
 import Image from "next/image"
+import { completeAuthFlow } from "@/lib/auth-utils"
+import { useAuth, useAuthStore } from "@/hooks/useAuth"
 
 export function Navbar() {
   const router = useRouter()
-  const { isConnected: w3aConnected, disconnect: disconnectWeb3Auth, userInfo } = useWeb3Auth()
+  const { isConnected: w3aConnected, disconnect: disconnectWeb3Auth, userInfo, provider: w3aProvider } = useWeb3Auth()
   const { isConnected: walletConnected, address } = useAccount()
+  const { data: walletClient } = useWalletClient()
+  const { logout: authLogout } = useAuth()
   const [showAuthModal, setShowAuthModal] = useState(false)
+  const [isAuthenticating, setIsAuthenticating] = useState(false)
   const previousWalletConnected = useRef(walletConnected)
+  const previousW3aConnected = useRef(w3aConnected)
 
   const isConnected = w3aConnected || walletConnected
 
-  // Redirect to dashboard when wallet connects
+  // Handle wallet connection and backend authentication
   useEffect(() => {
-    if (walletConnected && !previousWalletConnected.current) {
-      router.push("/dashboard")
+    const handleWalletAuth = async () => {
+      const { token, isAuthenticated } = useAuthStore.getState()
+
+      console.log("[Navbar] Wallet state:", {
+        walletConnected: walletConnected,
+        previousConnected: previousWalletConnected.current,
+        address: address ? `${address.slice(0, 10)}...` : null,
+        web3Auth: w3aConnected,
+        hasWalletClient: !!walletClient,
+        hasToken: !!token,
+        isAuthenticated
+      })
+
+      // Check if we need to authenticate:
+      // 1. Wallet is connected with address and walletClient
+      // 2. Either it's a new connection OR token is missing (reconnected wallet without auth)
+      const needsAuth = walletConnected && address && walletClient && (
+        !previousWalletConnected.current || !token || !isAuthenticated
+      )
+
+      if (needsAuth) {
+        setIsAuthenticating(true)
+        setShowAuthModal(false) // Close the modal when starting authentication
+        try {
+          console.log("[Navbar] Wallet connected, authenticating with backend...")
+          console.log("[Navbar] Reason:", {
+            newConnection: !previousWalletConnected.current,
+            missingToken: !token,
+            notAuthenticated: !isAuthenticated
+          })
+
+          const authResult = await completeAuthFlow(walletClient, address)
+
+          if (authResult.success) {
+            console.log("[Navbar] ✓ Authentication complete, redirecting to:", authResult.redirectTo)
+            router.push(authResult.redirectTo)
+          } else {
+            console.error("[Navbar] Authentication failed")
+          }
+        } catch (error) {
+          console.error("[Navbar] Error during authentication:", error)
+        } finally {
+          setIsAuthenticating(false)
+          previousWalletConnected.current = walletConnected
+        }
+      } else if (walletConnected && address) {
+        // Update previousConnected if wallet is still connected
+        previousWalletConnected.current = walletConnected
+      } else if (!walletConnected) {
+        // Reset previousConnected when wallet is disconnected
+        previousWalletConnected.current = false
+      }
     }
-    previousWalletConnected.current = walletConnected
-  }, [walletConnected, router])
+
+    handleWalletAuth()
+  }, [walletConnected, address, walletClient, router, w3aConnected])
+
+  // Handle Web3Auth connection and backend authentication
+  useEffect(() => {
+    const handleWeb3AuthAuth = async () => {
+      if (w3aConnected && !previousW3aConnected.current && w3aProvider) {
+        setIsAuthenticating(true)
+        try {
+          console.log("Web3Auth connected, getting wallet address...")
+
+          // Get wallet address from Web3Auth provider
+          const accounts = await w3aProvider.request({
+            method: "eth_accounts",
+          }) as string[]
+
+          if (accounts && accounts.length > 0) {
+            const walletAddress = accounts[0]
+            console.log("Web3Auth wallet address:", walletAddress)
+
+            const authResult = await completeAuthFlow(w3aProvider, walletAddress)
+
+            if (authResult.success || !!address) {
+              console.log("✓ Authentication complete, redirecting to:", authResult.redirectTo)
+              router.push(authResult.redirectTo)
+            } else {
+              console.error("Authentication failed")
+            }
+          }
+        } catch (error) {
+          console.error("Error during Web3Auth authentication:", error)
+        } finally {
+          setIsAuthenticating(false)
+        }
+      }
+      previousW3aConnected.current = w3aConnected
+    }
+
+    handleWeb3AuthAuth()
+  }, [w3aConnected, w3aProvider, router])
 
   const handleDisconnect = () => {
+    // Clear auth store
+    authLogout()
+
     if (w3aConnected) {
       disconnectWeb3Auth()
     }

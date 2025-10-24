@@ -32,8 +32,8 @@ export function AuthMethodModal({ isOpen, onClose }: AuthMethodModalProps) {
     try {
       await connectWeb3Auth()
       onClose()
-      // Redirect to dashboard after successful connection
-      router.push("/dashboard")
+      // Redirect will be handled by the Navbar component after successful connection
+      // The navbar's useEffect will detect the connection and call completeAuthFlow
     } catch (error) {
       console.error("Web3Auth connection error:", error)
     } finally {
