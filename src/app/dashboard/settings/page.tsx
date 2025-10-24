@@ -11,7 +11,7 @@ import type { Merchant } from "@/types"
 import toast, { Toaster } from "react-hot-toast"
 
 export default function SettingsPage() {
-  const { token, merchant: authMerchant } = useAuth()
+  const { token } = useAuth()
   const { address: wagmiAddress } = useAccount()
   const { isConnected: w3aConnected, provider: w3aProvider } = useWeb3Auth()
   const [merchant, setMerchant] = useState<Merchant | null>(null)

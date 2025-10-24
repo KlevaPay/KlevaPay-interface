@@ -1,5 +1,4 @@
 export * from './button'
 export * from './input'
 export * from './spinner'
-export * from './wallet-connect-modal'
 export * from './auth-method-modal'

@@ -50,7 +50,7 @@ export function ProtectedRoute({ children, requireAuth = true }: ProtectedRouteP
     // If user has either wallet connection OR auth token, allow access
     // This handles the case where auth is persisted but wallet hasn't reconnected yet
     if (hasWalletConnection || hasAuthToken) {
-      console.log("[ProtectedRoute] ✓ Access granted")
+      
       return
     }
 
