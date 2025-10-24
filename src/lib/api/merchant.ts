@@ -6,10 +6,14 @@ import { apiClient } from "./client"
 import type { ApiResponse, Merchant } from "@/types"
 
 export interface MerchantStats {
-  totalRevenue: number
   totalTransactions: number
+  totalVolume: number
+  successfulTransactions: number
   pendingTransactions: number
+  failedTransactions: number
+  averageTransactionAmount: number
   successRate: number
+  period: string
 }
 
 export interface MerchantSettings {
@@ -121,9 +125,23 @@ export const merchantApi = {
 
   /**
    * Get merchant statistics
+   * Response: { success, message, data: { merchant, analytics } }
    */
   getStats: async (walletAddress: string): Promise<ApiResponse<MerchantStats>> => {
-    return apiClient.get<MerchantStats>(`/api/transactions/wallet/${walletAddress}/stats`, walletAddress)
+    const response = await apiClient.get<any>(`/api/transactions/wallet/${walletAddress}/stats`, walletAddress)
+
+    // Extract analytics from nested response
+    if (response.success && response.data?.analytics) {
+      return {
+        success: true,
+        data: response.data.analytics
+      }
+    }
+
+    return {
+      success: false,
+      error: response.error || { code: "UNKNOWN_ERROR", message: "Failed to fetch statistics" }
+    }
   },
 
   /**
