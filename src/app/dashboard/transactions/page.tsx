@@ -3,14 +3,11 @@
 import { useState, useEffect } from "react"
 import { DashboardSidebar } from "@/ui/modules/block/dashboard/sidebar"
 import { DashboardTopbar } from "@/ui/modules/block/dashboard/topbar"
-import { TransactionsTable } from "@/ui/modules/block/dashboard/transactions-table"
 import { Button } from "@/ui/modules/components/button"
-import { Input } from "@/ui/modules/components/input"
 import { transactionsApi, type TransactionFilters } from "@/lib/api"
 import { useAuth } from "@/hooks/useAuth"
 import type { Transaction } from "@/types"
-import { PaymentStatus } from "@/types"
-import { Search, Filter, Download, ChevronLeft, ChevronRight } from "lucide-react"
+import { Download, ChevronLeft, ChevronRight } from "lucide-react"
 
 export default function TransactionsPage() {
   const { token, isAuthenticated, merchant } = useAuth()
@@ -20,7 +17,6 @@ export default function TransactionsPage() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [filters, setFilters] = useState<TransactionFilters>({})
-  const [searchQuery, setSearchQuery] = useState("")
 
   const limit = 20
 
@@ -99,18 +95,21 @@ export default function TransactionsPage() {
     }
   }
 
-  // Map PaymentStatus to table status
-  const mapStatusToTableStatus = (status: PaymentStatus): "Completed" | "Processing" | "Failed" => {
-    switch (status) {
-      case PaymentStatus.PAID:
-      case PaymentStatus.SETTLED:
+  // Map status string to table status
+  const mapStatusToTableStatus = (status: string): "Completed" | "Processing" | "Failed" => {
+    const upperStatus = status.toUpperCase()
+    switch (upperStatus) {
+      case "PAID":
+      case "SETTLED":
+      case "SUCCESSFUL":
+      case "SUCCESS":
         return "Completed"
-      case PaymentStatus.PENDING:
-      case PaymentStatus.PROCESSING:
+      case "PENDING":
+      case "PROCESSING":
         return "Processing"
-      case PaymentStatus.FAILED:
-      case PaymentStatus.CANCELLED:
-      case PaymentStatus.REFUNDED:
+      case "FAILED":
+      case "CANCELLED":
+      case "REFUNDED":
         return "Failed"
       default:
         return "Processing"
@@ -119,8 +118,8 @@ export default function TransactionsPage() {
 
   // Format transaction data for table
   const formatTransactionForTable = (tx: Transaction) => ({
-    id: tx.id,
-    customer: tx.customerName || tx.customerEmail || "N/A",
+    id: tx.reference || tx._id,
+    customer: tx.customerName || tx.customerEmail || tx.metadata?.customerId || "N/A",
     amount: `${tx.amount.toLocaleString()} ${tx.currency}`,
     status: mapStatusToTableStatus(tx.status),
     date: new Date(tx.createdAt).toLocaleString(),
@@ -141,23 +140,14 @@ export default function TransactionsPage() {
             <div className="mt-3 h-px bg-white/40" />
           </section>
 
-          {/* Filters and Search */}
+          {/* Filters */}
           <section className="bg-white rounded-xl shadow-sm border border-border p-4 mb-4">
-            <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-              {/* Search */}
-              <div className="relative flex-1 w-full md:max-w-md">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
-                <Input
-                  type="search"
-                  placeholder="Search transactions..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-
-              {/* Filters */}
-              <div className="flex gap-2 w-full md:w-auto">
+            <div className="flex flex-col gap-4">
+              {/* Primary Filters Row */}
+              <div className="flex flex-col md:flex-row gap-3 items-center justify-between">
+                {/* Filter Dropdowns */}
+                <div className="flex gap-2 w-full flex-wrap">
+                {/* Status Filter */}
                 <select
                   value={filters.status || ""}
                   onChange={(e) =>
@@ -169,9 +159,42 @@ export default function TransactionsPage() {
                   <option value="PENDING">Pending</option>
                   <option value="PAID">Paid</option>
                   <option value="PROCESSING">Processing</option>
+                  <option value="SUCCESS">Success</option>
                   <option value="SETTLED">Settled</option>
                   <option value="FAILED">Failed</option>
-                  <option value="REFUNDED">Refunded</option>
+                </select>
+
+                {/* Method Filter */}
+                <select
+                  value={filters.method || ""}
+                  onChange={(e) =>
+                    handleFilterChange("method", e.target.value || undefined)
+                  }
+                  className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1E73FF] focus:border-transparent"
+                >
+                  <option value="">All Methods</option>
+                  <option value="CARD">Card</option>
+                  <option value="BANK">Bank Transfer</option>
+                  <option value="WALLET">Wallet</option>
+                  <option value="CRYPTO">Crypto</option>
+                  <option value="FIAT">Fiat</option>
+                </select>
+
+                {/* Currency Filter */}
+                <select
+                  value={filters.currency || ""}
+                  onChange={(e) =>
+                    handleFilterChange("currency", e.target.value || undefined)
+                  }
+                  className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1E73FF] focus:border-transparent"
+                >
+                  <option value="">All Currencies</option>
+                  <option value="NGN">NGN</option>
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                  <option value="USDT">USDT</option>
+                  <option value="BTC">BTC</option>
+                  <option value="ETH">ETH</option>
                 </select>
 
                 <Button variant="outline" onClick={handleExport}>
@@ -179,6 +202,60 @@ export default function TransactionsPage() {
                   Export
                 </Button>
               </div>
+            </div>
+
+            {/* Date Range and Sort Filters Row */}
+            <div className="flex flex-col md:flex-row gap-3">
+              {/* Date Range */}
+              <div className="flex gap-2 flex-1">
+                <div className="flex-1">
+                  <label className="block text-xs text-gray-600 mb-1">Start Date</label>
+                  <input
+                    type="date"
+                    value={filters.startDate || ""}
+                    onChange={(e) => handleFilterChange("startDate", e.target.value || undefined)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1E73FF] focus:border-transparent"
+                  />
+                </div>
+                <div className="flex-1">
+                  <label className="block text-xs text-gray-600 mb-1">End Date</label>
+                  <input
+                    type="date"
+                    value={filters.endDate || ""}
+                    onChange={(e) => handleFilterChange("endDate", e.target.value || undefined)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1E73FF] focus:border-transparent"
+                  />
+                </div>
+              </div>
+
+              {/* Sort Options */}
+              <div className="flex gap-2">
+                <div>
+                  <label className="block text-xs text-gray-600 mb-1">Sort By</label>
+                  <select
+                    value={filters.sortBy || "createdAt"}
+                    onChange={(e) => handleFilterChange("sortBy", e.target.value)}
+                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1E73FF] focus:border-transparent"
+                  >
+                    <option value="createdAt">Date</option>
+                    <option value="amount">Amount</option>
+                    <option value="status">Status</option>
+                    <option value="reference">Reference</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-600 mb-1">Order</label>
+                  <select
+                    value={filters.sortOrder || "desc"}
+                    onChange={(e) => handleFilterChange("sortOrder", e.target.value as "asc" | "desc")}
+                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1E73FF] focus:border-transparent"
+                  >
+                    <option value="desc">Newest First</option>
+                    <option value="asc">Oldest First</option>
+                  </select>
+                </div>
+              </div>
+            </div>
             </div>
           </section>
 
@@ -198,10 +275,76 @@ export default function TransactionsPage() {
           ) : (
             <>
               {/* Transactions Table */}
-              <section>
-                <TransactionsTable
-                  items={transactions.map(formatTransactionForTable)}
-                />
+              <section className="rounded-xl bg-white shadow-sm border border-border overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-50 border-b border-border">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Reference
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Customer
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Amount
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Method
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Status
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Date
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {transactions.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                            No transactions found
+                          </td>
+                        </tr>
+                      ) : (
+                        transactions.map((tx) => {
+                          const formatted = formatTransactionForTable(tx)
+                          return (
+                            <tr key={tx._id} className="hover:bg-gray-50">
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
+                                {formatted.id}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {formatted.customer}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {formatted.amount}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 capitalize">
+                                {tx.method?.toLowerCase().replace('_', ' ') || 'N/A'}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                  formatted.status === "Completed"
+                                    ? "bg-green-100 text-green-800"
+                                    : formatted.status === "Processing"
+                                    ? "bg-yellow-100 text-yellow-800"
+                                    : "bg-red-100 text-red-800"
+                                }`}>
+                                  {formatted.status}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {formatted.date}
+                              </td>
+                            </tr>
+                          )
+                        })
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </section>
 
               {/* Pagination */}

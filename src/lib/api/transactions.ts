@@ -3,13 +3,16 @@
  */
 
 import { apiClient } from "./client"
-import type { ApiResponse, Transaction, PaginatedResponse, TransactionType, PaymentStatus } from "@/types"
+import type { ApiResponse, Transaction, PaginatedResponse } from "@/types"
 
 export interface TransactionFilters {
-  status?: PaymentStatus
-  type?: TransactionType
-  startDate?: string
-  endDate?: string
+  status?: string       // PENDING, PAID, SETTLED, FAILED, SUCCESS, PROCESSING
+  method?: string       // CARD, BANK, WALLET, CRYPTO, FIAT
+  currency?: string     // NGN, USD, EUR, USDT, BTC, ETH
+  startDate?: string    // YYYY-MM-DD
+  endDate?: string      // YYYY-MM-DD
+  sortBy?: string       // Field to sort by (default: createdAt)
+  sortOrder?: "asc" | "desc"  // Sort order (default: desc)
 }
 
 export const transactionsApi = {
@@ -76,6 +79,22 @@ export const transactionsApi = {
   ): Promise<ApiResponse<Transaction>> => {
     return apiClient.get<Transaction>(
       `/api/transactions/wallet/${walletAddress}`,
+      token
+    )
+  },
+
+  /**
+   * Get recent transactions by wallet address
+   * Returns the most recent transactions for quick overview
+   */
+  getRecentTransactions: async (
+    walletAddress: string,
+    token: string,
+    limit?: number
+  ): Promise<ApiResponse<{ transactions: Transaction[] }>> => {
+    const params = limit ? `?limit=${limit}` : ""
+    return apiClient.get<{ transactions: Transaction[] }>(
+      `/api/transactions/wallet/${walletAddress}/recent${params}`,
       token
     )
   },

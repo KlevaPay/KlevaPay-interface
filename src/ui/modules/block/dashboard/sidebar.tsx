@@ -26,7 +26,7 @@ export function DashboardSidebar() {
 
   return (
     <aside
-      className={`h-full shrink-0 border-r hidden md:flex flex-col transition-all duration-300 ${
+      className={`min-h-screen shrink-0 border-r hidden md:flex flex-col transition-all duration-300 ${
         isCollapsed ? "w-[72px]" : "w-[240px]"
       }`}
       style={{ background: "var(--brand-gradient)", borderColor: "rgba(255,255,255,0.15)" }}

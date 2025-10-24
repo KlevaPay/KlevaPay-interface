@@ -1,3 +1,4 @@
+
 // ============================================================================
 // KLEVAPAY TYPES
 // ============================================================================
@@ -119,25 +120,21 @@ export interface PaymentIntent {
 }
 
 export interface Transaction {
-  id: string
+  _id: string
+  id?: string
   merchantId: string
-  paymentIntentId?: string
-  type: TransactionType
+  reference: string
   amount: number
-  currency: Currency
-  status: PaymentStatus
-  paymentMethod?: PaymentMethod
+  currency: string
+  method: string
+  status: string
+  providerResponse?: {
+    gateway?: string
+    id?: number
+  }
+  metadata?: Record<string, any>
   customerName?: string
   customerEmail?: string
-  transactionHash?: string
-  providerReference?: string
-  fee?: number
-  netAmount?: number
-  convertedAmount?: number
-  convertedCurrency?: Currency
-  conversionRate?: number
-  description?: string
-  metadata?: Record<string, any>
   createdAt: string
   updatedAt: string
 }
