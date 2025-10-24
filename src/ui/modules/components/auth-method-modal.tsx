@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { X, Wallet, Mail } from "lucide-react"
-import { Button } from "./button"
 import { useConnectModal } from "@rainbow-me/rainbowkit"
 import { useWeb3Auth } from "@/providers/web3auth-provider"
 
@@ -81,9 +80,9 @@ export function AuthMethodModal({ isOpen, onClose }: AuthMethodModalProps) {
                   <Wallet className="size-6 text-[#1E73FF]" />
                 </div>
                 <div className="flex-1 text-left">
-                  <h3 className="font-semibold text-gray-900 mb-1">Continue with Wallet</h3>
+                  <h3 className="font-semibold text-gray-900 mb-1">I have a crypto wallet</h3>
                   <p className="text-xs text-gray-600">
-                    Connect using MetaMask, Coinbase Wallet, WalletConnect, and more
+                    Perfect for crypto users! Connect with MetaMask, Coinbase, or your existing wallet
                   </p>
                 </div>
               </div>
@@ -111,10 +110,10 @@ export function AuthMethodModal({ isOpen, onClose }: AuthMethodModalProps) {
                 </div>
                 <div className="flex-1 text-left">
                   <h3 className="font-semibold text-gray-900 mb-1">
-                    {isConnecting ? "Connecting..." : "Continue without Wallet"}
+                    {isConnecting ? "Connecting..." : "I'm new to crypto"}
                   </h3>
                   <p className="text-xs text-gray-600">
-                    Sign in with Google, Apple, Twitter, GitHub, or Discord
+                    No worries! Sign in with Google, Apple, Twitter, or other familiar accounts
                   </p>
                 </div>
               </div>
