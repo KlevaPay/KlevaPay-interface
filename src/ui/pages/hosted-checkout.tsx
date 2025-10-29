@@ -634,22 +634,24 @@ export function HostedCheckoutPage() {
   return (
     <div className="min-h-screen bg-[#F5FAFC]">
       <header className="border-b" style={{ borderColor: "var(--brand-navy-border)" }}>
-        <div className="mx-auto flex max-w-[960px] items-center justify-between gap-4 px-4 py-6 sm:px-6">
+        <div className="mx-auto flex max-w-[1920px] items-center justify-between gap-4 px-4 py-6 sm:px-6 md:px-12 lg:px-20 xl:px-32">
           <div className="flex items-center gap-3">
-            <Image src="/logo.png" alt="KlevaPay logo" width={40} height={40} className="rounded-xl bg-white p-1 shadow" />
+            <a href="/">
+              <Image src="/logo.png" alt="KlevaPay logo" width={40} height={40} className="rounded-xl bg-white p-1 shadow" />
+            </a>
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[color:var(--brand-navy)]/70">Hosted checkout</p>
               <h1 className="text-xl font-semibold text-[color:var(--brand-navy)]">Secure payment via KlevaPay</h1>
             </div>
           </div>
-          <div className="hidden md:flex items-center gap-2 text-xs text-gray-600">
+          {/* <div className="hidden md:flex items-center gap-2 text-xs text-gray-600">
             <ShieldCheck className="size-4 text-[color:var(--brand-blue)]" />
             <span>PCI-DSS Level 1 • Encryption in transit & at rest</span>
-          </div>
+          </div> */}
         </div>
       </header>
 
-      <main className="mx-auto flex w-full max-w-[1520px] flex-col gap-6 px-4 py-8 sm:px-6 lg:flex-row">
+      <main className="mx-auto flex w-full max-w-[1920px] flex-col gap-6 px-4 py-8 sm:px-6 lg:flex-row md:px-12 lg:px-20 xl:px-32">
         <aside className="flex w-full flex-col gap-5 lg:w-[320px]">
           <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-[0_10px_30px_rgba(7,56,99,0.08)]">
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gray-500">Order summary</p>

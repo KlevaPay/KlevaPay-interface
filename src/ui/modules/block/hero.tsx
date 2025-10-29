@@ -68,14 +68,24 @@ export function Hero() {
               Low fees, fast conversions, secure integrations.
             </p>
 
-            <Button
-              size="lg"
-              className="text-white"
-              style={{ backgroundColor: "var(--brand-blue)" }}
-              onClick={handleGetStarted}
-            >
-              {getButtonText()} <span className="ml-2 inline-block">→</span>
-            </Button>
+            <div className="flex items-center gap-6">
+              <Button
+                size="lg"
+                className="text-white"
+                style={{ backgroundColor: "var(--brand-blue)" }}
+                onClick={handleGetStarted}
+              >
+                {getButtonText()} <span className="ml-2 inline-block">→</span>
+              </Button>
+              <Button
+                size="lg"
+                className="text-white"
+                style={{ backgroundColor: "var(--brand-blue)" }}
+                onClick={() => router.push("/hosted-checkout")}
+              >
+                View Demo <span className="ml-2 inline-block">→</span>
+              </Button>
+            </div>
           </motion.div>
 
           <div className="flex justify-center md:justify-end">
